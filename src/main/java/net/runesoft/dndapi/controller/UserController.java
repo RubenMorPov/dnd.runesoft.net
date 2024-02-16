@@ -1,28 +1,33 @@
 package net.runesoft.dndapi.controller;
 
-import net.runesoft.dndapi.dto.UserDto;
-import org.apache.catalina.User;
+import net.runesoft.dndapi.entities.UserEntity;
+import net.runesoft.dndapi.repositories.UsersRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.annotation.RequestScope;
 
-import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
 
-    public static HashMap<String, UserDto> users = new HashMap<>();
+    @Autowired
+    private UsersRepository usersRepository;
 
     @GetMapping("/get")
-    public ResponseEntity<UserDto> getUser(@RequestParam String userName) {
-        UserDto user = users.get(userName);
-        return ResponseEntity.ok(user);
+    public ResponseEntity<Optional<UserEntity>> getUser(@RequestParam String userName) {
+        return ResponseEntity.ok(usersRepository.findByName(userName));
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<UserEntity>> getAll() {
+        return ResponseEntity.ok(usersRepository.findAll());
     }
 
     @PostMapping("/create")
-    public void createUser(@RequestBody UserDto newUser) {
-        newUser.setCharacters(new HashMap<>());
-        users.put(newUser.getName(), newUser);
+    public ResponseEntity<UserEntity> createUser(@RequestBody UserEntity newUser) {
+        return ResponseEntity.ok(usersRepository.save(newUser));
     }
 }
