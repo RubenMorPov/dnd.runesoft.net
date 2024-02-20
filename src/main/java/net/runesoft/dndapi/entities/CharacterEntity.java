@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @Table(name = "characters")
 @Data
@@ -32,4 +35,11 @@ public class CharacterEntity {
     @ManyToOne
     @JoinColumn(name = "USER_UID", nullable = false)
     private UserEntity user;
+
+    @ManyToMany
+    @JoinTable(
+            name = "characters_classes",
+            joinColumns = @JoinColumn(name = "CHARACTER_UID"),
+            inverseJoinColumns = @JoinColumn(name = "CLASS_UID"))
+    private Set<ClassEntity> classes;
 }
