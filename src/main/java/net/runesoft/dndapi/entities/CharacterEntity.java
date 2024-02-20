@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 public class CharacterEntity {
     // CAMPOS
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "CHARACTER_UID", nullable = false)
     private String uid;
     @Column(name = "CHARACTER_NAME", nullable = false)
