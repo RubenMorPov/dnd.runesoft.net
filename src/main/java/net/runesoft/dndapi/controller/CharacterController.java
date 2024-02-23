@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/character")
@@ -22,15 +21,20 @@ public class CharacterController {
         return ResponseEntity.ok(characterService.get(uid));
     }
 
-    @GetMapping("/find")
-    public ResponseEntity<Optional<Set<CharacterEntity>>> findCharacter(@RequestParam String name) {
-        return ResponseEntity.ok(characterService.findByName(name));
+    @GetMapping("/find/by-name")
+    public ResponseEntity<Optional<List<CharacterEntity>>> findCharacterByName(@RequestParam String name) {
+        return ResponseEntity.ok(characterService.findByNameAndUser(name));
     }
 
     @GetMapping("/find-by-user")
-    public ResponseEntity<Optional<CharacterEntity>> findCharacter(@RequestParam String name,
+    public ResponseEntity<Optional<List<CharacterEntity>>> findCharacterByUser(@RequestParam String userName) {
+        return ResponseEntity.ok(characterService.findByUser(userName));
+    }
+
+        @GetMapping("/find/by-name-and-user")
+    public ResponseEntity<Optional<CharacterEntity>> findCharacterByNameAndUser(@RequestParam String name,
                                                                    @RequestParam String userName) {
-        return ResponseEntity.ok(characterService.findByName(name, userName));
+        return ResponseEntity.ok(characterService.findByNameAndUser(name, userName));
     }
 
     @PostMapping("/create")

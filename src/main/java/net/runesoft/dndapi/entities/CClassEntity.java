@@ -1,16 +1,18 @@
 package net.runesoft.dndapi.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "classes")
 @Data
 @NoArgsConstructor
-public class ClassEntity {
+public class CClassEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "CLASS_UID", nullable = false)
@@ -20,6 +22,7 @@ public class ClassEntity {
     @Column(name = "CLASS_DESCRIPTION", nullable = false)
     private String description;
 
-    @ManyToMany(mappedBy = "classes")
-    Set<CharacterEntity> characters;
+    @OneToMany(mappedBy = "cclass")
+    @JsonIgnore
+    private List<CharactersClassesEntity> characterClasses = new ArrayList<>();
 }

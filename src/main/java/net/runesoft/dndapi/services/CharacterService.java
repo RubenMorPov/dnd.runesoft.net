@@ -1,18 +1,18 @@
 package net.runesoft.dndapi.services;
 
+import net.runesoft.dndapi.entities.CClassEntity;
 import net.runesoft.dndapi.entities.CharacterEntity;
-import net.runesoft.dndapi.entities.ClassEntity;
+import net.runesoft.dndapi.entities.CharactersClassesEntity;
 import net.runesoft.dndapi.entities.UserEntity;
 import net.runesoft.dndapi.repositories.CharacterRepository;
+import net.runesoft.dndapi.repositories.CharactersClassesRepository;
 import net.runesoft.dndapi.repositories.ClassRepository;
 import net.runesoft.dndapi.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class CharacterService {
@@ -26,18 +26,29 @@ public class CharacterService {
     @Autowired
     private ClassRepository classRepository;
 
+    @Autowired
+    private CharactersClassesRepository charactersClassesRepository;
+
     public Optional<CharacterEntity> get(String uuid) {
         return characterRepository.findById(uuid);
     }
 
-    public Optional<Set<CharacterEntity>> findByName(String name) {
+    public Optional<List<CharacterEntity>> findByNameAndUser(String name) {
         return characterRepository.findByName(name);
     }
 
-    public Optional<CharacterEntity> findByName(String name, String userName) {
+    public Optional<CharacterEntity> findByNameAndUser(String name, String userName) {
         Optional<UserEntity> userEntity = userRepository.findByName(userName);
         if (userEntity.isPresent()) {
             return characterRepository.findByNameAndUser(name, userEntity.get());
+        }
+        return Optional.empty();
+    }
+
+    public Optional<List<CharacterEntity>> findByUser(String userName) {
+        Optional<UserEntity> userEntity = userRepository.findByName(userName);
+        if (userEntity.isPresent()) {
+            return characterRepository.findByUser(userEntity.get());
         }
         return Optional.empty();
     }
@@ -52,14 +63,24 @@ public class CharacterService {
 
     public CharacterEntity save(CharacterEntity newCharacter, String userName, String className) {
         Optional<UserEntity> userEntity = userRepository.findByName(userName);
-        Optional<ClassEntity> classEntity = classRepository.findByName(className);
+        Optional<CClassEntity> classEntity = classRepository.findByName(className);
         if (userEntity.isPresent() && classEntity.isPresent()) {
             newCharacter.setUser(userEntity.get());
-            if (newCharacter.getClasses() == null) newCharacter.setClasses(new HashSet<>());
-            newCharacter.getClasses().add(classEntity.get());
-            return characterRepository.save(newCharacter);
+            CharacterEntity savedCharacter = characterRepository.save(newCharacter);
+            getNewCharacterClass(newCharacter, classEntity.get());
+            return savedCharacter;
         }
         return new CharacterEntity();
+    }
+
+    public CharactersClassesEntity getNewCharacterClass(CharacterEntity character, CClassEntity classEntity) {
+        CharactersClassesEntity charactersClasses = new CharactersClassesEntity();
+
+        charactersClasses.setCharacter(character);
+        charactersClasses.setCclass(classEntity);
+        charactersClasses.setLevel(1);
+
+        return charactersClassesRepository.save(charactersClasses);
     }
 
 }

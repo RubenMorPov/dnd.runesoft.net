@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "characters")
@@ -36,10 +36,6 @@ public class CharacterEntity {
     @JoinColumn(name = "USER_UID", nullable = false)
     private UserEntity user;
 
-    @ManyToMany
-    @JoinTable(
-            name = "characters_classes",
-            joinColumns = @JoinColumn(name = "CHARACTER_UID"),
-            inverseJoinColumns = @JoinColumn(name = "CLASS_UID"))
-    private Set<ClassEntity> classes;
+    @OneToMany(mappedBy = "character")
+    private List<CharactersClassesEntity> characterClasses = new ArrayList<>();
 }
